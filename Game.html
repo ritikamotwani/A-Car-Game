@@ -14,8 +14,8 @@ var carPicLoaded = false;
 
 var carX = 75;
 var carY = 75;
-var carSpeedX = 5;
-var carSpeedY = 7;
+var carAng = 0;
+var carSpeed = 2;
 
 const TRACK_W = 40;
 const TRACK_H = 40;
@@ -77,24 +77,7 @@ function carReset() {
 	}
 }
 
-function carMove() {
-	carX += carSpeedX;
-	carY += carSpeedY;
 
-	if(carX < 0 && carSpeedX < 0.0) { //left
-		carSpeedX *= -1;
-	}
-	if(carX > canvas.width && carSpeedX > 0.0) { // right
-		carSpeedX *= -1;
-	}
-	if(carY < 0 && carSpeedY < 0.0) { // top
-		carSpeedY *= -1;
-	}
-	if(carY > canvas.height) { // bottom
-		carReset();
-		trackReset();
-	}
-}
 
 function isTrackAtColRow(col, row) {
 	if(col >= 0 && col < TRACK_COLS &&
@@ -106,50 +89,30 @@ function isTrackAtColRow(col, row) {
 	}
 }
 
+function carMove() {
+	//carX += Math.cos(carAng) * carSpeed;
+	//carY += Math.sin(carAng) * carSpeed;
+	
+	carAng += 0.02;
+}
 function carTrackHandling() {
 	var carTrackCol = Math.floor(carX / TRACK_W);
 	var carTrackRow = Math.floor(carY / TRACK_H);
-	var trackIndexUndercar = rowColToArrayIndex(carTrackCol, carTrackRow);
+	var trackIndexUnderCar = rowColToArrayIndex(carTrackCol, carTrackRow);
 
 	if(carTrackCol >= 0 && carTrackCol < TRACK_COLS &&
 		carTrackRow >= 0 && carTrackRow < TRACK_ROWS) {
 
 		if(isTrackAtColRow( carTrackCol,carTrackRow )) {
-			// console.log(tracksLeft);
-
-			var prevcarX = carX - carSpeedX;
-			var prevcarY = carY - carSpeedY;
-			var prevTrackCol = Math.floor(prevcarX / TRACK_W);
-			var prevTrackRow = Math.floor(prevcarY / TRACK_H);
-
-			var bothTestsFailed = true;
-
-			if(prevTrackCol != carTrackCol) {
-				if(isTrackAtColRow(prevTrackCol, carTrackRow) == false) {
-					carSpeedX *= -1;
-					bothTestsFailed = false;
-				}
-			}
-			if(prevTrackRow != carTrackRow) {
-				if(isTrackAtColRow(carTrackCol, prevTrackRow) == false) {
-					carSpeedY *= -1;
-					bothTestsFailed = false;
-				}
-			}
-
-			if(bothTestsFailed) { // armpit case, prevents car from going through
-				carSpeedX *= -1;
-				carSpeedY *= -1;
-			}
-
+			carSpeed *= -1;
 		} // end of track found
 	} // end of valid col and row
-} // end of carTrackHandling func
+} 
 
 function moveAll() {
 	carMove();
 	
-	carTrackHandling();
+	//carTrackHandling();
 }
 
 function rowColToArrayIndex(col, row) {
@@ -171,19 +134,24 @@ function drawTracks() {
 	} // end of for each row
 
 } // end of drawTracks func
-
 function drawAll() {
 	colorRect(0,0, canvas.width,canvas.height, 'black'); // clear screen
 
 	//colorCircle(carX,carY, 10, 'white'); // draw car
 	if(carPicLoaded) {
-		canvasContext.drawImage(carPic,
-			carX - carPic.width/2, carY - carPic.height/2);
+		drawBitmapCenteredWithRotation(carPic, carX,carY, carAng);
 	}
 
 	drawTracks();
-}
+} 
 
+function drawBitmapCenteredWithRotation(useBitmap, atX,atY, withAng) {
+	canvasContext.save();
+	canvasContext.translate(atX, atY);
+	canvasContext.rotate(withAng);
+	canvasContext.drawImage(useBitmap, -useBitmap.width/2, -useBitmap.height/2);
+	canvasContext.restore();
+}
 function colorRect(topLeftX,topLeftY, boxWidth,boxHeight, fillColor) {
 	canvasContext.fillStyle = fillColor;
 	canvasContext.fillRect(topLeftX,topLeftY, boxWidth,boxHeight);
@@ -196,10 +164,7 @@ function colorCircle(centerX,centerY, radius, fillColor) {
 	canvasContext.fill();
 }
 
-function colorText(showWords, textX,textY, fillColor) {
-	canvasContext.fillStyle = fillColor;
-	canvasContext.fillText(showWords, textX, textY);
-}
+
 
 </script>
 
