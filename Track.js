@@ -50,15 +50,15 @@ function carTrackHandling() {
 		carTrackRow >= 0 && carTrackRow < TRACK_ROWS) {
 
 		if(isWallAtColRow( carTrackCol,carTrackRow )) {
-			// next two lines added to fix a bug, mentioned in video 9.6
-			// undoes the car movement which got it onto the wall
+			
 			carX -= Math.cos(carAng) * carSpeed;
 			carY -= Math.sin(carAng) * carSpeed;
 
 			carSpeed *= -0.5;
-		} // end of track found
-	} // end of valid col and row
-} // end of carTrackHandling func
+			
+		} 
+	} 
+} 
 
 function rowColToArrayIndex(col, row) {
 	return col + TRACK_COLS * row;
@@ -78,7 +78,7 @@ function drawTracks() {
 				canvasContext.drawImage(wallPic,
 					TRACK_W*eachCol,TRACK_H*eachRow);
 			}
-		} // end of for each col
-	} // end of for each row
+		} 
+	} 
 
-} // end of drawTracks func
+} 
